@@ -1356,7 +1356,7 @@ def clientBot(op):
                                 lang = sep[0]
                                 say = text.replace("say-" + lang + " ","")
                                 if lang not in list_language["list_textToSpeech"]:
-                                    return alin.sendMessage(to, "Language not found")
+                                    return client.sendMessage(to, "Language not found")
                                 tts = gTTS(text=say, lang=lang)
                                 tts.save("hasil.mp3")
                                 client.sendAudio(to,"hasil.mp3")
@@ -1464,7 +1464,7 @@ def clientBot(op):
                                 lang = sep[0]
                                 say = text.replace("tr-" + lang + " ","")
                                 if lang not in list_language["list_translate"]:
-                                    return alin.sendMessage(to, "Language not found")
+                                    return client.sendMessage(to, "Language not found")
                                 translator = Translator()
                                 hasil = translator.translate(say, dest=lang)
                                 A = hasil.text
