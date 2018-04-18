@@ -8,7 +8,7 @@
 
 Installation is simple. It can be installed from pip using the following command:
 ```sh
-$ python3 -m pip install -r requirements.txt
+$ python -m pip install -r requirements.txt
 ```
 
 ## Usage
