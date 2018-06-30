@@ -4,19 +4,28 @@
 
 ----
 
-## Installation
+## Installation for Termux
 
 Installation is simple. It can be installed from pip using the following command:
 ```sh
+$ apt update
+$ apt upgrade
+$ apt install python
+$ apt install git
+$ git clone https://github.com/muhmursalind/HelloWorld
+$ cd HelloWorld
 $ python -m pip install -r requirements.txt
+$ python helloworld.py
 ```
 
-## Usage
+## Installation for VPS
 
-```python
->>> from LineAPI.linepy import *
->>> client = LINE("")
->>> client.log("Auth Token : " + str(line.authToken))
+Installation is simple. It can be installed from pip using the following command:
+```sh
+$ git clone https://github.com/muhmursalind/HelloWorld
+$ cd HelloWorld
+$ python3 -m pip install -r requirements.txt
+$ python3 helloworld.py
 ```
 
 ## LINE
@@ -25,8 +34,5 @@ $ python -m pip install -r requirements.txt
 ## Discord
 [HelloWorld](https://discord.gg/5jqbutB)
 
-## Author
-Muhammad Mursalin Darmamawan / [@Alin](https://line.me/t/p/~muhmursalind)
-
-## Author Linepy
+## Thanks For Author linepy
 Fadhiil Rachman / [@fadhiilrachman](https://www.instagram.com/fadhiilrachman)
