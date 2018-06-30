@@ -10,15 +10,15 @@ from .shop import Shop
 
 class LINE(Auth, Models, Talk, Square, Call, Timeline, Shop):
 
-    def __init__(self, idOrAuthToken=None, passwd=None, certificate=None, systemName=None, appName=None, showQr=False, keepLoggedIn=True):
-        
+    def __init__(self, idOrAuthToken=None, passwd=None, speedThrift=False, certificate=None, systemName=None, appName=None, showQr=False, keepLoggedIn=True):
+
         Auth.__init__(self)
         if not (idOrAuthToken or idOrAuthToken and passwd):
-            self.loginWithQrCode(keepLoggedIn=keepLoggedIn, systemName=systemName, appName=appName, showQr=showQr)
+            self.loginWithQrCode(keepLoggedIn=keepLoggedIn, systemName=systemName, appName=appName, speedThrift=speedThrift, showQr=showQr)
         if idOrAuthToken and passwd:
-            self.loginWithCredential(_id=idOrAuthToken, passwd=passwd, certificate=certificate, systemName=systemName, appName=appName, keepLoggedIn=keepLoggedIn)
+            self.loginWithCredential(_id=idOrAuthToken, passwd=passwd, certificate=certificate, systemName=systemName, appName=appName, keepLoggedIn=keepLoggedIn, speedThrift=speedThrift)
         elif idOrAuthToken and not passwd:
-            self.loginWithAuthToken(authToken=idOrAuthToken, appName=appName)
+            self.loginWithAuthToken(authToken=idOrAuthToken, appName=appName, speedThrift=speedThrift)
 
         self.__initAll()
 

@@ -111,9 +111,47 @@ class Talk(object):
         return self.sendMessage(to, text, contentMetadata)
 
     @loggedIn
-    def sendSticker(self, to, packageId, stickerId):
+    def sendMention(self, to, text="", mids=[]):
+        arrData = ""
+        arr = []
+        mention = "@zeroxyuuki "
+        if mids == []:
+            raise Exception("Invalid mids")
+        if "@!" in text:
+            if text.count("@!") != len(mids):
+                raise Exception("Invalid mids")
+            texts = text.split("@!")
+            textx = ""
+            for mid in mids:
+                textx += str(texts[mids.index(mid)])
+                slen = len(textx)
+                elen = len(textx) + 15
+                arrData = {'S':str(slen), 'E':str(elen - 4), 'M':mid}
+                arr.append(arrData)
+                textx += mention
+            textx += str(texts[len(mids)])
+        else:
+            textx = ""
+            slen = len(textx)
+            elen = len(textx) + 15
+            arrData = {'S':str(slen), 'E':str(elen - 4), 'M':mids[0]}
+            arr.append(arrData)
+            textx += mention + str(text)
+        return self.sendMessage(to, textx, {'MENTION': str('{"MENTIONEES":' + json.dumps(arr) + '}')}, 0)
+
+    @loggedIn
+    def sendFooter(self, to, text, agentIcon, agentName, agentLink):
         contentMetadata = {
-            'STKVER': '100',
+            'AGENT_ICON': agentIcon,
+            'AGENT_NAME': agentName,
+            'AGENT_LINK': agentLink
+        }
+        return self.sendMessage(to, text, contentMetadata, 0)
+
+    @loggedIn
+    def sendSticker(self, to, stickerVersion, packageId, stickerId):
+        contentMetadata = {
+            'STKVER': stickerVersion,
             'STKPKGID': packageId,
             'STKID': stickerId
         }
@@ -201,7 +239,8 @@ class Talk(object):
     @loggedIn
     def sendImageWithURL(self, to, url):
         path = self.downloadFileURL(url, 'path')
-        return self.sendImage(to, path)
+        self.sendImage(to, path)
+        return self.deleteFile(path)
 
     @loggedIn
     def sendGIF(self, to, path):
@@ -210,7 +249,8 @@ class Talk(object):
     @loggedIn
     def sendGIFWithURL(self, to, url):
         path = self.downloadFileURL(url, 'path')
-        return self.sendGIF(to, path)
+        self.sendGIF(to, path)
+        return self.deleteFile(path)
 
     @loggedIn
     def sendVideo(self, to, path):
@@ -220,7 +260,8 @@ class Talk(object):
     @loggedIn
     def sendVideoWithURL(self, to, url):
         path = self.downloadFileURL(url, 'path')
-        return self.sendVideo(to, path)
+        self.sendVideo(to, path)
+        return self.deleteFile(path)
 
     @loggedIn
     def sendAudio(self, to, path):
@@ -230,7 +271,8 @@ class Talk(object):
     @loggedIn
     def sendAudioWithURL(self, to, url):
         path = self.downloadFileURL(url, 'path')
-        return self.sendAudio(to, path)
+        self.sendAudio(to, path)
+        return self.deleteFile(path)
 
     @loggedIn
     def sendFile(self, to, path, file_name=''):
@@ -243,7 +285,8 @@ class Talk(object):
     @loggedIn
     def sendFileWithURL(self, to, url, fileName=''):
         path = self.downloadFileURL(url, 'path')
-        return self.sendFile(to, path, fileName)
+        self.sendFile(to, path, fileName)
+        return self.deleteFile(path)
 
     """Contact"""
         
@@ -318,17 +361,18 @@ class Talk(object):
     @loggedIn
     def reissueUserTicket(self, expirationTime=100, maxUseCount=100):
         return self.talk.reissueUserTicket(expirationTime, maxUseCount)
-    
+
     @loggedIn
     def cloneContactProfile(self, mid):
         contact = self.getContact(mid)
         profile = self.profile
         profile.displayName = contact.displayName
         profile.statusMessage = contact.statusMessage
-        profile.pictureStatus = contact.pictureStatus
+        profile.pictureStatus = self.downloadFileURL('http://dl.profile.line-cdn.net/' + contact.pictureStatus, 'path')
         if self.getProfileCoverId(mid) is not None:
             self.updateProfileCoverById(self.getProfileCoverId(mid))
-        self.updateProfileAttribute(8, profile.pictureStatus)
+        if profile.videoProfile is not None:
+            self.updateProfilePicture(profile.pictureStatus)
         return self.updateProfile(profile)
 
     """Group"""
