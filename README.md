@@ -6,7 +6,6 @@
 
 ## Installation for Termux
 
-Installation is simple. It can be installed from pip using the following command:
 ```sh
 $ apt update
 $ apt upgrade
@@ -20,13 +19,16 @@ $ python helloworld.py
 
 ## Installation for VPS
 
-Installation is simple. It can be installed from pip using the following command:
 ```sh
 $ git clone https://github.com/muhmursalind/HelloWorld
 $ cd HelloWorld
 $ python3 -m pip install -r requirements.txt
 $ python3 helloworld.py
 ```
+
+## Attention
+
+for the first time running python helloworld.py will be an error
 
 ## LINE
 [HelloWorld Square](https://line.me/ti/g2/LPYXUFI1YE)
