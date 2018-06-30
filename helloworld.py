@@ -1252,7 +1252,7 @@ def clientBot(op):
 							with requests.session() as web:
 								web.headers["user-agent"] = "Mozilla/5.0"
 								url = web.get("https://www.musixmatch.com/search/{}".format(urllib.parse.quote(query)))
-								data = BeautifulSoup(url.content, "lxml")
+								data = BeautifulSoup(url.content, "html.parser")
 								result = []
 								for trackList in data.findAll("ul", {"class":"tracks list"}):
 									for urlList in trackList.findAll("a"):
