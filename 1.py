@@ -480,7 +480,7 @@ def clientBot(op):
 				client.acceptGroupInvitation(op.param1)
 				client.sendMention(op.param1, settings["autoJoinMessage"], [op.param2])
 
-		if op.type == 25:
+		if op.type in [25, 26]:
 			try:
 				print("[ 25 ] SEND MESSAGE")
 				msg = op.message
@@ -617,13 +617,13 @@ def clientBot(op):
 							    grouplist = client.getGroupIdsJoined()
 							    contactlist = client.getAllContactIds()
 							    blockedlist = client.getBlockedContactIds()
-							    ret_ = "╔══[ About Bot Sange ]"
+							    ret_ = "╔══[ About Bot ]"
 							    ret_ += "\n╠ Name : {}".format(contact.displayName)
 							    ret_ += "\n╠ Group : {}".format(str(len(grouplist)))
 							    ret_ += "\n╠ Friend : {}".format(str(len(contactlist)))
 							    ret_ += "\n╠ Blocked : {}".format(str(len(blockedlist)))
 							    ret_ += "\n╠══[ About Bot ]"
-							    ret_ += "\n╠ Version : Publik"
+							    ret_ += "\n╠ Type : Publik"
 							    ret_ += "\n╠ Creator : {}".format(creator.displayName)
 							    ret_ += "\n╚══[ About Bot ]"
 							    client.sendMessage(msg.to, "Special Thanks To\n\n-Author LinePy\n-HelloWorld\n-Bot Eater\n-NadyaTj\n-All My Friends")
