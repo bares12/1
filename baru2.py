@@ -53,19 +53,6 @@ unsend = json.load(unsendOpen)
 stickers = json.load(stickersOpen)
 images = json.load(imagesOpen)
 
-settings["myProfile"]["displayName"] = clientProfile.displayName
-settings["myProfile"]["statusMessage"] = clientProfile.statusMessage
-settings["myProfile"]["pictureStatus"] = clientProfile.pictureStatus
-cont = client.getContact(clientMID)
-settings["myProfile"]["videoProfile"] = cont.videoProfile
-coverId = client.getProfileDetail()["result"]["objectId"]
-settings["myProfile"]["coverId"] = coverId
-
-with open("/root/moeself/temp.json", "r", encoding="utf_8_sig") as f:
-    anu = json.loads(f.read())
-    anu.update(settings)
-    settings = anu
-
 ## -*- Script Start -*- ##
 def restartBot():
     print ("[ INFO ] BOT RESETTED")
@@ -310,15 +297,6 @@ def cloneProfile(mid):
         changeVideoAndPictureProfile(pict, vids)
     coverId = client.getProfileDetail(mid)['result']['objectId']
     client.updateProfileCoverById(coverId)
-
-def backupProfile():
-    profile = client.getContact(clientMID)
-    settings['myProfile']['displayName'] = profile.displayName
-    settings['myProfile']['pictureStatus'] = profile.pictureStatus
-    settings['myProfile']['statusMessage'] = profile.statusMessage
-    settings['myProfile']['videoProfile'] = profile.videoProfile
-    coverId = client.getProfileDetail()['result']['objectId']
-    settings['myProfile']['coverId'] = str(coverId)
 
 def restoreProfile():
     profile = client.getProfile()
@@ -630,7 +608,7 @@ def myinfo():
 def backupData():
     try:
         backup = settings
-        f = codecs.open('temp.json','w','utf-8')
+        f = codecs.open('setting.json','w','utf-8')
         json.dump(backup, f, sort_keys=True, indent=4, ensure_ascii=False)
         backup = read
         f = codecs.open('read.json','w','utf-8')
@@ -638,8 +616,8 @@ def backupData():
         backup = stickers
         f = codecs.open('sticker.json','w','utf-8')
         json.dump(backup, f, sort_keys=True, indent=4, ensure_ascii=False)
-        backup = images
-        f = codecs.open('image.json','w','utf-8')
+        backup = unsend
+        f = codecs.open('unsend.json','w','utf-8')
         json.dump(backup, f, sort_keys=True, indent=4, ensure_ascii=False)
         return True
     except Exception as error:
