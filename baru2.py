@@ -124,18 +124,6 @@ def sendImage(to, path, name="image"):
     except Exception as error:
         logError(error)
 
-def delExpire():
-    if temp_flood != {}:
-        for tmp in temp_flood:
-            if temp_flood[tmp]["expire"] == True:
-                if time.time() - temp_flood[tmp]["time"] >= 3*10:
-                    temp_flood[tmp]["expire"] = False
-                    temp_flood[tmp]["time"] = time.time()
-                    try:
-                        client.sendMessage(tmp, "Bot kembali aktif")
-                    except Exception as error:
-                        logError(error)
-
 def sendMention(to, mid, firstmessage='', lastmessage=''):
     try:
         arrData = ""
@@ -759,29 +747,6 @@ async def clientBot(op):
             if isValid != False:
                 if msg.toType == 0 and sender != clientMID: to = sender
                 else: to = receiver
-                if receiver in temp_flood:
-                    if temp_flood[receiver]["expire"] == True:
-                        if cmd == "open" and sender == clientMID:
-                            temp_flood[receiver]["expire"] = False
-                            temp_flood[receiver]["time"] = time.time()
-                            client.sendMessage(to, "Bot kembali aktif")
-                        return
-                    elif time.time() - temp_flood[receiver]["time"] <= 5:
-                        temp_flood[receiver]["flood"] += 1
-                        if temp_flood[receiver]["flood"] >= 20:
-                            temp_flood[receiver]["flood"] = 0
-                            temp_flood[receiver]["expire"] = True
-                            ret_ = "Spam terdeteksi, Bot akan silent selama 30 detik pada ruangan ini atau ketik {}Open untuk mengaktifkan kembali.".format(setKey)
-                            client.sendMessage(to, str(ret_))
-                    else:
-                         temp_flood[receiver]["flood"] = 0
-                         temp_flood[receiver]["time"] = time.time()
-                else:
-                    temp_flood[receiver] = {
-    	                "time": time.time(),
-    	                "flood": 0,
-    	                "expire": False
-                    }
                 if msg.toType == 0 and settings["autoReply"] and sender != clientMID:
                     contact = client.getContact(sender)
                     rjct = ["auto", "ngetag"]
