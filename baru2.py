@@ -3282,17 +3282,15 @@ async def clientBot(op):
         traceback.print_tb(error.__traceback__)
 
 def run():
-    while True:
-        try:
-            autoRestart()
-            ops = clientPoll.singleTrace(count=50)
-            if ops != None:
-                for op in ops:
-                   loop.run_until_complete(clientBot(op))
-                   #clientBot(op)
-                   clientPoll.setRevision(op.revision)
-        except Exception as e:
-            logError(e)
+	while True:
+		ops = clientPoll.singleTrace(count=50)
+		if ops != None:
+			for op in ops:
+				try:
+					clientBot(op)
+				except Exception as error:
+					logError(error)
+				clientPoll.setRevision(op.revision)
 
 if __name__ == "__main__":
-    run()
+	run()
