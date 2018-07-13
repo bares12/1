@@ -612,7 +612,7 @@ def backupData():
         logError(error)
         return False
 
-async def clientBot(op):
+def clientBot(op):
     try:
         if settings["restartPoint"] != None:
             client.sendMessage(settings["restartPoint"], "Bot kembali aktif")
