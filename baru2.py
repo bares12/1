@@ -3285,7 +3285,6 @@ def run():
     while True:
         try:
             autoRestart()
-            delExpire()
             ops = clientPoll.singleTrace(count=50)
             if ops != None:
                 for op in ops:
