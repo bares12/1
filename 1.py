@@ -101,6 +101,67 @@ def command(text):
 		cmd = text.lower()
 	return cmd
 
+
+def changeVideoAndPictureProfile(pict, vids):
+    try:
+        files = {'file': open(vids, 'rb')}
+        obs_params = client.genOBSParams({'oid': clientMID, 'ver': '2.0', 'type': 'video', 'cat': 'vp.mp4'})
+        data = {'params': obs_params}
+        r_vp = client.server.postContent('{}/talk/vp/upload.nhn'.format(str(client.server.LINE_OBS_DOMAIN)), data=data, files=files)
+        if r_vp.status_code != 201:
+            return "Failed update profile"
+        client.updateProfilePicture(pict, 'vp')
+        return "Success update profile"
+    except Exception as e:
+        raise Exception("Error change video and picture profile {}".format(str(e)))
+
+def changeProfileVideo(to):
+    if settings['changeProfileVideo']['picture'] == None:
+        return client.sendMessage(to, "Foto tidak ditemukan")
+    elif settings['changeProfileVideo']['video'] == None:
+        return client.sendMessage(to, "Video tidak ditemukan")
+    else:
+        path = settings['changeProfileVideo']['video']
+        files = {'file': open(path, 'rb')}
+        obs_params = client.genOBSParams({'oid': client.getProfile().mid, 'ver': '2.0', 'type': 'video', 'cat': 'vp.mp4'})
+        data = {'params': obs_params}
+        r_vp = client.server.postContent('{}/talk/vp/upload.nhn'.format(str(client.server.LINE_OBS_DOMAIN)), data=data, files=files)
+        if r_vp.status_code != 201:
+            return client.sendMessage(to, "Gagal update profile")
+        path_p = settings['changeProfileVideo']['picture']
+        settings['changeProfileVideo']['status'] = False
+        client.updateProfilePicture(path_p, 'vp')
+
+def cloneProfile(mid):
+    contact = client.getContact(mid)
+    if contact.videoProfile == None:
+        client.cloneContactProfile(mid)
+    else:
+        profile = client.getProfile()
+        profile.displayName, profile.statusMessage = contact.displayName, contact.statusMessage
+        client.updateProfile(profile)
+        pict = client.downloadFileURL('http://dl.profile.line-cdn.net/' + contact.pictureStatus, saveAs="tmp/pict.bin")
+        vids = client.downloadFileURL( 'http://dl.profile.line-cdn.net/' + contact.pictureStatus + '/vp', saveAs="tmp/video.bin")
+        changeVideoAndPictureProfile(pict, vids)
+    coverId = client.getProfileDetail(mid)['result']['objectId']
+    client.updateProfileCoverById(coverId)
+
+def restoreProfile():
+    profile = client.getProfile()
+    profile.displayName = settings['myProfile']['displayName']
+    profile.statusMessage = settings['myProfile']['statusMessage']
+    if settings['myProfile']['videoProfile'] == None:
+        profile.pictureStatus = settings['myProfile']['pictureStatus']
+        client.updateProfileAttribute(8, profile.pictureStatus)
+        client.updateProfile(profile)
+    else:
+        client.updateProfile(profile)
+        pict = client.downloadFileURL('http://dl.profile.line-cdn.net/' + settings['myProfile']['pictureStatus'], saveAs="tmp/pict.bin")
+        vids = client.downloadFileURL( 'http://dl.profile.line-cdn.net/' + settings['myProfile']['pictureStatus'] + '/vp', saveAs="tmp/video.bin")
+        changeVideoAndPictureProfile(pict, vids)
+    coverId = settings['myProfile']['coverId']
+    client.updateProfileCoverById(coverId)
+
 def backupData():
 	try:
 		backup = read
@@ -122,17 +183,16 @@ def menuHelp():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp =	"╔══[ Help Message ]" + "\n" + \
-				"╠ " + key + "Self" + "\n" + \
-				"╠ " + key + "Group" + "\n" + \
-				"╠ " + key + "Special" + "\n" + \
-				"╠ " + key + "Media" + "\n" + \
-				"╠ " + key + "Creator" + "\n" + \
-				"╠ " + key + "About" + "\n" + \
-				"╠ " + key + "Translate" + "\n" + \
-				"╠ " + key + "TextToSpeech" + "\n" + \
-				"╠ " + key + "Spam" + "\n" + \
-				"╚══[ Menu Help ]"
+	menuHelp =	"[ Help Message ]" + "\n" + \
+				". " + key + "Self" + "\n" + \
+				". " + key + "Group" + "\n" + \
+				". " + key + "Special" + "\n" + \
+				". " + key + "Media" + "\n" + \
+				". " + key + "Creator" + "\n" + \
+				". " + key + "About" + "\n" + \
+				". " + key + "Translate" + "\n" + \
+				". " + key + "TextToSpeech" + "\n" + \
+				". Spam"
 	return menuHelp
 
 def menuHelp1():
@@ -140,28 +200,21 @@ def menuHelp1():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp1 =	"╔══[ Menu Self ]" + "\n" + \
-				"╠ " + key + "Me" + "\n" + \
-				"╠ " + key + "MyMid" + "\n" + \
-				"╠ " + key + "MyName" + "\n" + \
-				"╠ " + key + "MyBio" + "\n" + \
-				"╠ " + key + "MyPicture" + "\n" + \
-				"╠ " + key + "MyVideoProfile" + "\n" + \
-				"╠ " + key + "MyCover" + "\n" + \
-				"╠ " + key + "MyProfile" + "\n" + \
-				"╠ " + key + "GetMid @Mention" + "\n" + \
-				"╠ " + key + "GetName @Mention" + "\n" + \
-				"╠ " + key + "GetBio @Mention" + "\n" + \
-				"╠ " + key + "GetPicture @Mention" + "\n" + \
-				"╠ " + key + "GetVideoProfile @Mention" + "\n" + \
-				"╠ " + key + "GetCover @Mention" + "\n" + \
-				"╠ " + key + "CloneProfile @Mention" + "\n" + \
-				"╠ " + key + "RestoreProfile" + "\n" + \
-				"╠ " + key + "BackupProfile" + "\n" + \
-				"╠ " + key + "FriendList" + "\n" + \
-				"╠ " + key + "FriendInfo 「Number」" + "\n" + \
-				"╠ " + key + "BlockList" + "\n" + \
-				"╚══[ Menu Self ]"
+	menuHelp1 =	"[ Menu Self ]" + "\n" + \
+				". " + key + "Me" + "\n" + \
+				". " + key + "MyMid" + "\n" + \
+				". " + key + "MyName" + "\n" + \
+				". " + key + "MyBio" + "\n" + \
+				". " + key + "MyPicture" + "\n" + \
+				". " + key + "MyVideoProfile" + "\n" + \
+				". " + key + "MyCover" + "\n" + \
+				". " + key + "MyProfile" + "\n" + \
+				". " + key + "GetMid @Mention" + "\n" + \
+				". " + key + "GetName @Mention" + "\n" + \
+				". " + key + "GetBio @Mention" + "\n" + \
+				". " + key + "GetPicture @Mention" + "\n" + \
+				". " + key + "GetVideoProfile @Mention" + "\n" + \
+				". GetCover @Mention"
 	return menuHelp1
 
 def menuHelp2():
@@ -169,23 +222,21 @@ def menuHelp2():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp2 =	"╔══[ Menu Group ]" + "\n" + \
-				"╠ " + key + "ChangeGroupName: 「Text」" + "\n" + \
-				"╠ " + key + "GroupCreator" + "\n" + \
-				"╠ " + key + "GroupID" + "\n" + \
-				"╠ " + key + "GroupName" + "\n" + \
-				"╠ " + key + "GroupPicture" + "\n" + \
-				"╠ " + key + "OpenQR" + "\n" + \
-				"╠ " + key + "CloseQR" + "\n" + \
-				"╠ " + key + "GroupList" + "\n" + \
-				"╠ " + key + "MemberList" + "\n" + \
-				"╠ " + key + "PendingList" + "\n" + \
-				"╠ " + key + "GroupInfo" + "\n" + \
-				"╠ " + key + "Mentionall" + "\n" + \
-				"╠ " + key + "GroupBroadcast: 「Text」" + "\n" + \
-				"╠ " + key + "FriendBroadcast: [Text]" + "\n" + \
-				"╠ " + key + "ChangeGroupPicture" + "\n" + \
-				"╚══[ Menu Group ]"
+	menuHelp2 =	"[ Menu Group ]" + "\n" + \
+				". " + key + "ChangeGroupName: 「Text」" + "\n" + \
+				". " + key + "GroupCreator" + "\n" + \
+				". " + key + "GroupID" + "\n" + \
+				". " + key + "GroupName" + "\n" + \
+				". " + key + "GroupPicture" + "\n" + \
+				". " + key + "OpenQR" + "\n" + \
+				". " + key + "CloseQR" + "\n" + \
+				". " + key + "GroupList" + "\n" + \
+				". " + key + "MemberList" + "\n" + \
+				". " + key + "PendingList" + "\n" + \
+				". " + key + "GroupInfo" + "\n" + \
+				". " + key + "Mentionall" + "\n" + \
+				". " + key + "ChangeGroupPicture" + "\n" + \
+				". ChangeGroupPicture"
 	return menuHelp2
 
 def menuHelp3():
@@ -193,14 +244,13 @@ def menuHelp3():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp3 =	"╔══[ Menu Special ]" + "\n" + \
-				"╠ " + key + "Mimic 「On/Off」" + "\n" + \
-				"╠ " + key + "MimicList" + "\n" + \
-				"╠ " + key + "MimicAdd @Mention" + "\n" + \
-				"╠ " + key + "MimicDel @Mention" + "\n" + \
-				"╠ " + key + "Lurking 「On/Off」" + "\n" + \
-				"╠ " + key + "Lurking" + "\n" + \
-				"╚══[ Menu Special ]"
+	menuHelp3 =	"[ Menu Special ]" + "\n" + \
+				". " + key + "Mimic 「On/Off」" + "\n" + \
+				". " + key + "MimicList" + "\n" + \
+				". " + key + "MimicAdd @Mention" + "\n" + \
+				". " + key + "MimicDel @Mention" + "\n" + \
+				". " + key + "Lurking 「On/Off」" + "\n" + \
+				". Lurking"
 	return menuHelp3
 
 def menuHelp4():
@@ -208,15 +258,14 @@ def menuHelp4():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp4 =	"╔══[ Menu Media ]" + "\n" + \
-				"╠ " + key + "InstaInfo 「Username」" + "\n" + \
-				"╠ " + key + "InstaStory 「Username」" + "\n" + \
-				"╠ " + key + "Quotes" + "\n" + \
-				"╠ " + key + "SearchImage 「Search」" + "\n" + \
-				"╠ " + key + "SearchMusic 「Search」" + "\n" + \
-				"╠ " + key + "SearchLyric 「Search」" + "\n" + \
-				"╠ " + key + "SearchYoutube 「Search」" + "\n" + \
-				"╚══[ Menu Media ]"
+	menuHelp4 =	"[ Menu Media ]" + "\n" + \
+				". " + key + "InstaInfo 「Username」" + "\n" + \
+				". " + key + "InstaStory 「Username」" + "\n" + \
+				". " + key + "Quotes" + "\n" + \
+				". " + key + "SearchImage 「Search」" + "\n" + \
+				". " + key + "SearchMusic 「Search」" + "\n" + \
+				". " + key + "SearchLyric 「Search」" + "\n" + \
+				". SearchYoutube 「Search」"
 	return menuHelp4
 
 def menuHelp5():
@@ -224,13 +273,18 @@ def menuHelp5():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp5 =	"╔══[ Remote Bot ]" + "\n" + \
-				"╠ " + key + "Logoutt" + "\n" + \
-				"╠ " + key + "Restart" + "\n" + \
-				"╠ " + key + "Runtime" + "\n" + \
-				"╠ " + key + "Speed" + "\n" + \
-				"╠ " + key + "Status" + "\n" + \
-				"╚══[ Remote Bot ]"
+	menuHelp5 =	"[ Remote Bot ]" + "\n" + \
+				". " + key + "Logoutt" + "\n" + \
+				". " + key + "Restart" + "\n" + \
+				". " + key + "Runtime" + "\n" + \
+				". " + key + "Speed" + "\n" + \
+				". " + key + "Status" + "\n" + \
+				". " + key + "CloneProfile @Mention" + "\n" + \
+				". " + key + "RestoreProfile" + "\n" + \
+				". " + key + "BackupProfile" + "\n" + \
+				". " + key + "FriendList" + "\n" + \
+				". " + key + "FriendInfo 「Number」" + "\n" + \
+				". BlockList"
 	return menuHelp5
 
 def menuHelp6():
@@ -238,23 +292,24 @@ def menuHelp6():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp6 =	"╔══[ Menu Auto Setting ]" + "\n" + \
-				"╠ SetKey 「On/Off」" + "\n" + \
-				"╠ MyKey" + "\n" + \
-				"╠ " + key + "AutoAdd 「On/Off」" + "\n" + \
-				"╠ " + key + "AutoJoin 「On/Off」" + "\n" + \
-				"╠ " + key + "AutoJoinTicket 「On/Off」" + "\n" + \
-				"╠ " + key + "AutoRead 「On/Off」" + "\n" + \
-				"╠ " + key + "AutoRespon 「On/Off」" + "\n" + \
-				"╠ " + key + "CheckContact 「On/Off」" + "\n" + \
-				"╠ " + key + "CheckPost 「On/Off」" + "\n" + \
-				"╠ " + key + "CheckSticker 「On/Off」" + "\n" + \
-				"╠ " + key + "DetectUnsend 「On/Off」" + "\n" + \
-				"╠ " + key + "SetKey: 「text」" + "\n" + \
-				"╠ " + key + "SetAutoAddMessage: 「text」" + "\n" + \
-				"╠ " + key + "SetAutoResponMessage: 「text」" + "\n" + \
-				"╠ " + key + "SetAutoJoinMessage: 「Text」" + "\n" + \
-				"╚══[ Menu Auto Setting ]"
+	menuHelp6 =	"[ Menu Auto Setting ]" + "\n" + \
+				". SetKey 「On/Off」" + "\n" + \
+				". MyKey" + "\n" + \
+				". " + key + "AutoAdd 「On/Off」" + "\n" + \
+				". " + key + "AutoJoin 「On/Off」" + "\n" + \
+				". " + key + "AutoJoinTicket 「On/Off」" + "\n" + \
+				". " + key + "AutoRead 「On/Off」" + "\n" + \
+				". " + key + "AutoRespon 「On/Off」" + "\n" + \
+				". " + key + "CheckContact 「On/Off」" + "\n" + \
+				". " + key + "CheckPost 「On/Off」" + "\n" + \
+				". " + key + "CheckSticker 「On/Off」" + "\n" + \
+				". " + key + "DetectUnsend 「On/Off」" + "\n" + \
+				". " + key + "SetKey: 「text」" + "\n" + \
+				". " + key + "SetAutoAddMessage: 「text」" + "\n" + \
+				". " + key + "SetAutoResponMessage: 「text」" + "\n" + \
+				". " + key + "SetAutoJoinMessage: 「Text」" + "\n" + \
+				". " + key + "GroupBroadcast: 「Text」" + "\n" + \
+				". FriendBroadcast: [Text]"
 	return menuHelp6
 
 def menuHelp7():
@@ -262,14 +317,13 @@ def menuHelp7():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp7 =	"╔══[ Spam ]" + "\n" + \
-				"╠ " + key + "Saya Adalah Bot Yang Punya Hati" + "\n" + \
-				"╠ " + key + "Saya Adalah Bot Yang Punya Perasaan" + "\n" + \
-				"╠ " + key + "Saya Adalah Bot Bukan Mainan Terus Menurus" + "\n" + \
-				"╠ " + key + "Saya Adalah Bot Punya Harga Diri" + "\n" + \
-				"╠ " + key + "TolongLah Kalian Jangan Spam Bot" + "\n" + \
-				"╠ " + key + "Dan Jangan Sombong" + "\n" + \
-				"╚══[ Spam ]"
+	menuHelp7 =	"[ Spam ]" + "\n" + \
+				". " + key + "Saya Adalah Bot Yang Punya Hati" + "\n" + \
+				". " + key + "Saya Adalah Bot Yang Punya Perasaan" + "\n" + \
+				". " + key + "Saya Adalah Bot Bukan Mainan Terus Menurus" + "\n" + \
+				". " + key + "Saya Adalah Bot Punya Harga Diri" + "\n" + \
+				". " + key + "TolongLah Kalian Jangan Spam Bot" + "\n" + \
+				". Dan Jangan Sombong"
 	return menuHelp7
 
 def menuHelp8():
@@ -277,10 +331,10 @@ def menuHelp8():
 		key = settings['keyCommand']
 	else:
 		key = ''
-	menuHelp8 =	"╔══[ MyBot Settings ]" + "\n" + \
-				"╠ " + key + "Autoset" + "\n" + \
-				"╠ " + key + "Remote" + "\n" + \
-				"╚══[ MyBot Settings ]"
+	menuHelp8 =	"[ MyBot Settings ]" + "\n" + \
+				". " + key + "Autoset" + "\n" + \
+				". " + key + "Remote" + "\n" + \
+				"[ MyBot Settings ]"
 	return menuHelp8
 
 def menuTextToSpeech():
