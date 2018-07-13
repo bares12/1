@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from lib.akad.ttypes import Message
-from lib.akad.ttypes import ContentType as Type
-from lib.akad.ttypes import ChatRoomAnnouncementContents
+from LineAPI.akad.ttypes import Message
+from LineAPI.akad.ttypes import ContentType as Type
+from LineAPI.akad.ttypes import ChatRoomAnnouncementContents
 from datetime import datetime, timedelta
 from time import sleep
 from bs4 import BeautifulSoup
