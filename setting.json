@@ -15,6 +15,7 @@
     "changePictureProfile": false,
     "checkContact": false,
     "checkPost": false,
+    "restartPoint": false,
     "autoRestart": false,
     "timeRestart": false,
     "checkSticker": false,
