@@ -749,29 +749,22 @@ def clientBot(op):
                 client.sendMessage(op.param1, "Goblok ngapain invite gw")
                 client.leaveRoom(op.param1)
 
-	if op.type in [25, 26]:
-		try:
-			print("[ 25 ] SEND MESSAGE")
-			msg = op.message
-			text = str(msg.text)
-			msg_id = msg.id
-			receiver = msg.to
-			sender = msg._from
-			cmd = command(text)
-			setKey = settings["keyCommand"].title()
-			if settings["setKey"] == False:
-				setKey = ''
-			if msg.toType == 0 or msg.toType == 1 or msg.toType == 2:
-				if msg.toType == 0:
-					if sender != client.profile.mid:
-						to = sender
-					else:
-						to = receiver
-				elif msg.toType == 1:
-					to = receiver
-				elif msg.toType == 2:
-					to = receiver
-				if msg.contentType == 0:
+        if op.type in [25, 26]:
+            if op.type == 25: print ("[ 25 ] SEND MESSAGE")
+            else: print ("[ 26 ] RECEIVE MESSAGE")
+            msg = op.message
+            text = str(msg.text)
+            msg_id = msg.id
+            receiver = msg.to
+            sender = msg._from
+            cmd = command(text)
+            isValid = True
+            setKey = settings["keyCommand"].title()
+            if settings["setKey"] == False: setKey = ''
+            if isValid != False:
+                if msg.toType == 0 and sender != clientMID: to = sender
+                else: to = receiver
+			
                 if msg.toType == 0 and settings["autoReply"] and sender != clientMID:
                     contact = client.getContact(sender)
                     rjct = ["auto", "ngetag"]
