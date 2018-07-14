@@ -276,6 +276,37 @@ def ChangeVideoProfile(pict, vids):
     except Exception as e:
         raise Exception("Error change video and picture profile %s"%str(e))
 
+def changeProfileVideo(to):
+    if settings['changeProfileVideo']['picture'] == None:
+        return client.sendMessage(to, "Foto tidak ditemukan")
+    elif settings['changeProfileVideo']['video'] == None:
+        return client.sendMessage(to, "Video tidak ditemukan")
+    else:
+        path = settings['changeProfileVideo']['video']
+        files = {'file': open(path, 'rb')}
+        obs_params = client.genOBSParams({'oid': client.getProfile().mid, 'ver': '2.0', 'type': 'video', 'cat': 'vp.mp4'})
+        data = {'params': obs_params}
+        r_vp = client.server.postContent('{}/talk/vp/upload.nhn'.format(str(client.server.LINE_OBS_DOMAIN)), data=data, files=files)
+        if r_vp.status_code != 201:
+            return client.sendMessage(to, "Gagal update profile")
+        path_p = settings['changeProfileVideo']['picture']
+        settings['changeProfileVideo']['status'] = False
+        client.updateProfilePicture(path_p, 'vp')
+
+def cloneProfile(mid):
+    contact = client.getContact(mid)
+    if contact.videoProfile == None:
+        client.cloneContactProfile(mid)
+    else:
+        profile = client.getProfile()
+        profile.displayName, profile.statusMessage = contact.displayName, contact.statusMessage
+        client.updateProfile(profile)
+        pict = client.downloadFileURL('http://dl.profile.line-cdn.net/' + contact.pictureStatus, saveAs="tmp/pict.bin")
+        vids = client.downloadFileURL( 'http://dl.profile.line-cdn.net/' + contact.pictureStatus + '/vp', saveAs="tmp/video.bin")
+        changeVideoAndPictureProfile(pict, vids)
+    coverId = client.getProfileDetail(mid)['result']['objectId']
+    client.updateProfileCoverById(coverId)
+
 def cTime_to_datetime(unixtime):
     return datetime.fromtimestamp(int(str(unixtime)[:len(str(unixtime))-3]))
 def dt_to_str(dt):
