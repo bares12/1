@@ -364,15 +364,14 @@ def helpmessage():
         key = settings['keyCommand']
     else:
         key = ''
-    helpMessage =   "╔══[ Menu Dora Help ]" + "\n" + \
-                    "╠ " + key + " Self" + "\n" + \
-                    "╠ " + key + " Group" + "\n" + \
-                    "╠ " + key + " Special" + "\n" + \
-                    "╠ " + key + " Media" + "\n" + \
-                    "╠ " + key + " Status" + "\n" + \
-                    "╠ " + key + "Translate" + "\n" + \
-                    "╠ " + key + "TTS" + "\n" + \
-                    "╚══[ Doraemon Bot ]"
+    helpMessage =   ". [ Menu Help ]" + "\n" + \
+                    ". " + key + " Self" + "\n" + \
+                    ". " + key + " Group" + "\n" + \
+                    ". " + key + " Special" + "\n" + \
+                    ". " + key + " Media" + "\n" + \
+                    ". " + key + " Status" + "\n" + \
+                    ". " + key + " Translate" + "\n" + \
+                    ". TTS"
     return helpMessage
 
 def helpmessage1():
@@ -380,28 +379,28 @@ def helpmessage1():
         key = settings['keyCommand']
     else:
         key = ''
-    helpMessage1 =  "╔══[ Menu Self ]" + "\n" + \
-                    "╠ " + key + "ChangeName:「Query」" + "\n" + \
-                    "╠ " + key + "ChangeBio:「Query」" + "\n" + \
-                    "╠ " + key + "Me" + "\n" + \
-                    "╠ " + key + "MyMid" + "\n" + \
-                    "╠ " + key + "MyName" + "\n" + \
-                    "╠ " + key + "MyBio" + "\n" + \
-                    "╠ " + key + "MyPicture" + "\n" + \
-                    "╠ " + key + "MyVideoProfile" + "\n" + \
-                    "╠ " + key + "MyCover" + "\n" + \
-                    "╠ " + key + "StealContact「Mention」" + "\n" + \
-                    "╠ " + key + "StealMid「Mention」" + "\n" + \
-                    "╠ " + key + "StealName「Mention」" + "\n" + \
-                    "╠ " + key + "StealBio「Mention」" + "\n" + \
-                    "╠ " + key + "StealPicture「Mention」" + "\n" + \
-                    "╠ " + key + "StealVideoProfile「Mention」" + "\n" + \
-                    "╠ " + key + "StealCover「Mention」" + "\n" + \
-                    "╠ " + key + "CloneProfile「Mention」" + "\n" + \
-                    "╠ " + key + "RestoreProfile" + "\n" + \
-                    "╠ " + key + "BackupProfile" + "\n" + \
-                    "╠ " + key + "ChangePictureProfile" + "\n" + \
-                    "╚══[ Doraemon Bot ]"
+    helpMessage1 =  ". [ Menu Self ]" + "\n" + \
+                    ". " + key + "ChangeName:「Query」" + "\n" + \
+                    ". " + key + "ChangeBio:「Query」" + "\n" + \
+                    ". " + key + "Me" + "\n" + \
+                    ". " + key + "MyMid" + "\n" + \
+                    ". " + key + "MyName" + "\n" + \
+                    ". " + key + "MyBio" + "\n" + \
+                    ". " + key + "MyPicture" + "\n" + \
+                    ". " + key + "MyVideoProfile" + "\n" + \
+                    ". " + key + "MyCover" + "\n" + \
+                    ". " + key + "StealContact「Mention」" + "\n" + \
+                    ". " + key + "StealMid「Mention」" + "\n" + \
+                    ". " + key + "StealName「Mention」" + "\n" + \
+                    ". " + key + "StealBio「Mention」" + "\n" + \
+                    ". " + key + "StealPicture「Mention」" + "\n" + \
+                    ". " + key + "StealVideoProfile「Mention」" + "\n" + \
+                    ". " + key + "StealCover「Mention」" + "\n" + \
+                    ". " + key + "CloneProfile「Mention」" + "\n" + \
+                    ". " + key + "RestoreProfile" + "\n" + \
+                    ". " + key + "BackupProfile" + "\n" + \
+                    ". " + key + "Changevid" + "\n" + \
+                    ". ChangePictureProfile"
     return helpMessage1
 
 def helpmessage2():
@@ -409,18 +408,18 @@ def helpmessage2():
         key = settings['keyCommand']
     else:
         key = ''
-    helpMessage2 =  "╔══[ Menu Group ]" + "\n" + \
-                    "╠ " + key + "GroupCreator" + "\n" + \
-                    "╠ " + key + "GroupId" + "\n" + \
-                    "╠ " + key + "GroupName" + "\n" + \
-                    "╠ " + key + "GroupPicture" + "\n" + \
-                    "╠ " + key + "GroupTicket" + "\n" + \
-                    "╠ " + key + "GroupTicket「On/Off」" + "\n" + \
-                    "╠ " + key + "GroupList" + "\n" + \
-                    "╠ " + key + "GroupMemberList" + "\n" + \
-                    "╠ " + key + "GroupInfo" + "\n" + \
-                    "╠ " + key + "ChangeGroupPicture" + "\n" + \
-                    "╚══[ Doraemon Bot ]"
+    helpMessage2 =  ". [ Menu Group ]" + "\n" + \
+                    ". " + key + "GroupCreator" + "\n" + \
+                    ". " + key + "GroupId" + "\n" + \
+                    ". " + key + "GroupName" + "\n" + \
+                    ". " + key + "GroupPicture" + "\n" + \
+                    ". " + key + "GroupTicket" + "\n" + \
+                    ". " + key + "GroupTicket「On/Off」" + "\n" + \
+                    ". " + key + "GroupList" + "\n" + \
+                    ". " + key + "GroupMemberList" + "\n" + \
+                    ". " + key + "GroupInfo" + "\n" + \
+                    ". " + key + "ChangeGroupPicture" + "\n" + \
+                    ". ChangeGroupPicture"
     return helpMessage2
 
 def helpmessage3():
@@ -467,18 +466,17 @@ def helpmessage5():
         key = settings['keyCommand']
     else:
         key = ''
-    helpMessage5 =  "╔══[ Menu Setting ]" + "\n" + \
-                    "╠ " + key + "AutoAdd「On/Off」" + "\n" + \
-                    "╠ " + key + "AutoJoin「On/Off」" + "\n" + \
-                    "╠ " + key + "AutoJoinTicket「On/Off」" + "\n" + \
-                    "╠ " + key + "AutoLeave「On/Off」" + "\n" + \
-                    "╠ " + key + "AutoRead「On/Off」" + "\n" + \
-                    "╠ " + key + "AutoRespon「On/Off」" + "\n" + \
-                    "╠ " + key + "CheckContact「On/Off」" + "\n" + \
-                    "╠ " + key + "CheckPost「On/Off」" + "\n" + \
-                    "╠ " + key + "CheckSticker「On/Off」" + "\n" + \
-                    "╠ " + key + "UnsendChat「On/Off」" + "\n" + \
-                    "╚══[ Doraemon Bot ]"
+    helpMessage5 =  ". [ Menu Setting ]" + "\n" + \
+                    ". " + key + "AutoAdd「On/Off」" + "\n" + \
+                    ". " + key + "AutoJoin「On/Off」" + "\n" + \
+                    ". " + key + "AutoJoinTicket「On/Off」" + "\n" + \
+                    ". " + key + "AutoLeave「On/Off」" + "\n" + \
+                    ". " + key + "AutoRead「On/Off」" + "\n" + \
+                    ". " + key + "AutoRespon「On/Off」" + "\n" + \
+                    ". " + key + "CheckContact「On/Off」" + "\n" + \
+                    ". " + key + "CheckPost「On/Off」" + "\n" + \
+                    ". " + key + "CheckSticker「On/Off」" + "\n" + \
+                    ". UnsendChat「On/Off」"
     return helpMessage5
 
 def helptexttospeech():
