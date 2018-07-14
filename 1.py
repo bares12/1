@@ -1131,6 +1131,14 @@ def clientBot(op):
 										ret_ += "\n╠ {}. {}".format(str(no), str(pending.displayName))
 									ret_ += "\n╚══[ Total {} Pending]".format(str(len(group.invitee)))
 									client.sendMessage(to, str(ret_))
+						elif cmd == "groupcreator":
+							if msg.toType == 2:
+                                                        try:
+							    group = client.getGroup(to)
+                                                            GS = group.creator.mid
+                                                            client.sendContact(to, GS)
+                                                        except:
+                                                            pass
 						elif cmd == "groupinfo":
 							group = client.getGroup(to)
 							try:
