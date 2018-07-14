@@ -626,7 +626,7 @@ def backupData():
 		logError(error)
 		return False
 
-async def clientBot(op):
+def clientBot(op):
     try:
         if settings["restartPoint"] != None:
             client.sendMessage(settings["restartPoint"], "Bot kembali aktif")
@@ -3327,7 +3327,7 @@ def run():
             if ops != None:
                 for op in ops:
                    loop.run_until_complete(clientBot(op))
-                   #clientBot(op)
+                   clientBot(op)
                    clientPoll.setRevision(op.revision)
         except Exception as e:
             logError(e)
