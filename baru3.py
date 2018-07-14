@@ -1,57 +1,50 @@
 # -*- coding: utf-8 -*-
 
 from LineAPI.linepy import *
+from LineAPI.akad.ttypes import Message
+from LineAPI.akad.ttypes import ContentType as Type
 from gtts import gTTS
+from time import sleep
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
-from datetime import datetime
 from googletrans import Translator
-import ast, codecs, json, os, pytz, re, random, requests, sys, time, urllib.parse
+from humanfriendly import format_timespan, format_size, format_number, format_length
+import time, random, sys, json, codecs, threading, glob, re, string, os, requests, six, ast, pytz, urllib, urllib3, urllib.parse, traceback, atexit
 
-listApp = ["CHROMEOS", "DESKTOPWIN", "DESKTOPMAC", "IOSIPAD", "WIN10"]
-try:
-	for app in listApp:
-		try:
-			try:
-				with open("authToken.txt", "r") as token:
-					authToken = token.read()
-					if not authToken:
-						client = LINE()
-						with open("authToken.txt","w") as token:
-							token.write(client.authToken)
-						continue
-					client = LINE(authToken, speedThrift=False, appName="{}\t2.1.5\tHelloWorld\t11.2.5".format(app))
-				break
-			except Exception as error:
-				print(error)
-				if error == "REVOKE":
-					exit()
-				elif "auth" in error:
-					continue
-				else:
-					exit()
-		except Exception as error:
-			print(error)
-except Exception as error:
-	print(error)
-with open("authToken.txt", "w") as token:
-    token.write(str(client.authToken))
+client = LINE()
+#client = LINE("")
 clientMid = client.profile.mid
-clientStart = time.time()
+clientProfile = client.getProfile()
+clientSettings = client.getSettings()
 clientPoll = OEPoll(client)
+botStart = time.time()
+temp_flood = {}
 
-languageOpen = codecs.open("language.json","r","utf-8")
+msg_dict = {}
+    
 readOpen = codecs.open("read.json","r","utf-8")
-settingsOpen = codecs.open("setting.json","r","utf-8")
-unsendOpen = codecs.open("unsend.json","r","utf-8")
-stickerOpen = codecs.open("sticker.json","r","utf-8")
-imageOpen = codecs.open("image.json","r","utf-8")
+settingsOpen = codecs.open("temp.json","r","utf-8")
+imagesOpen = codecs.open("image.json","r","utf-8")
+stickersOpen = codecs.open("sticker.json","r","utf-8")
 
-language = json.load(languageOpen)
 read = json.load(readOpen)
 settings = json.load(settingsOpen)
-unsend = json.load(unsendOpen)
-sticker = json.load(stickerOpen)
-image = json.load(imageOpen)
+images = json.load(imagesOpen)
+stickers = json.load(stickersOpen)
+
+settings["myProfile"]["displayName"] = clientProfile.displayName
+settings["myProfile"]["statusMessage"] = clientProfile.statusMessage
+settings["myProfile"]["pictureStatus"] = clientProfile.pictureStatus
+cont = client.getContact(clientMID)
+settings["myProfile"]["videoProfile"] = cont.videoProfile
+coverId = client.getProfileDetail()["result"]["objectId"]
+settings["myProfile"]["coverId"] = coverId
+
+try:
+    with open("Log_data.json","r",encoding="utf_8_sig") as f:
+        msg_dict = json.loads(f.read())
+except:
+    print("Couldn't read Log data")
 
 ## -*- Script Start -*- ##
 def restartBot():
@@ -617,7 +610,7 @@ def myinfo():
 def backupData():
     try:
         backup = settings
-        f = codecs.open('setting.json','w','utf-8')
+        f = codecs.open('temp.json','w','utf-8')
         json.dump(backup, f, sort_keys=True, indent=4, ensure_ascii=False)
         backup = read
         f = codecs.open('read.json','w','utf-8')
@@ -633,8 +626,12 @@ def backupData():
         logError(error)
         return False
 
-def clientBot(op):
+async def clientBot(op):
     try:
+        if settings["restartPoint"] != None:
+            client.sendMessage(settings["restartPoint"], "Bot kembali aktif")
+            settings["restartPoint"] = None
+
         if op.type == 0:
             print ("[ 0 ] END OF OPERATION")
             return
@@ -764,7 +761,29 @@ def clientBot(op):
             if isValid != False:
                 if msg.toType == 0 and sender != clientMID: to = sender
                 else: to = receiver
-			
+                if receiver in temp_flood:
+                    if temp_flood[receiver]["expire"] == True:
+                        if cmd == "open" and sender == clientMID:
+                            temp_flood[receiver]["expire"] = False
+                            temp_flood[receiver]["time"] = time.time()
+                            client.sendMessage(to, "Bot kembali aktif")
+                        return
+                    elif time.time() - temp_flood[receiver]["time"] <= 5:
+                        temp_flood[receiver]["flood"] += 1
+                        if temp_flood[receiver]["flood"] >= 20:
+                            temp_flood[receiver]["flood"] = 0
+                            temp_flood[receiver]["expire"] = True
+                            ret_ = "Spam terdeteksi, Bot akan silent selama 30 detik pada ruangan ini atau ketik {}Open untuk mengaktifkan kembali.".format(setKey)
+                            client.sendMessage(to, str(ret_))
+                    else:
+                         temp_flood[receiver]["flood"] = 0
+                         temp_flood[receiver]["time"] = time.time()
+                else:
+                    temp_flood[receiver] = {
+    	                "time": time.time(),
+    	                "flood": 0,
+    	                "expire": False
+                    }
                 if msg.toType == 0 and settings["autoReply"] and sender != clientMID:
                     contact = client.getContact(sender)
                     rjct = ["auto", "ngetag"]
@@ -3297,17 +3316,21 @@ def clientBot(op):
         backupData()
     except Exception as error:
         logError(error)
+        traceback.print_tb(error.__traceback__)
 
 def run():
-	while True:
-		ops = clientPoll.singleTrace(count=50)
-		if ops != None:
-			for op in ops:
-				try:
-					clientBot(op)
-				except Exception as error:
-					logError(error)
-				clientPoll.setRevision(op.revision)
+    while True:
+        try:
+            autoRestart()
+            delExpire()
+            ops = clientPoll.singleTrace(count=50)
+            if ops != None:
+                for op in ops:
+                   loop.run_until_complete(clientBot(op))
+                   #clientBot(op)
+                   clientPoll.setRevision(op.revision)
+        except Exception as e:
+            logError(e)
 
 if __name__ == "__main__":
-	run()
+    run()
