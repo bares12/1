@@ -1138,6 +1138,18 @@ def clientBot(op):
                                             settings["ChangeVideoProfilePicture"] = False
                                             ChangeVideoProfile(vids)
                                             client.sendMessage(to, "Success")
+                            elif cmd == "changevid":
+                                settings['changeProfileVideo']['status'] = True
+                                settings['changeProfileVideo']['stage'] = 1
+                                client.sendMessage(to, "Silahkan kirimkan video yang ingin anda jadikan profile")
+                            elif cmd == "abort":
+                                settings['changePicture'] = False
+                                settings['changeCover'] = False
+                                settings['changeProfileVideo']['stage'] = 0
+                                settings['changeProfileVideo']['status'] = False
+                                if to in settings['changeGroupPicture']:
+                            	    settings['changeGroupPicture'].remove(to)
+                                client.sendMessage(to, "Operasi dibatalkan")
                             elif cmd == "changegrouppicture":
                                 if msg.toType == 2:
                                     if to not in settings["changeGroupPicture"]:
@@ -1653,6 +1665,26 @@ def clientBot(op):
                                 settings["changeGroupPicture"].remove(to)
                                 client.updateGroupPicture(to, path)
                                 client.sendMessage(to, "Berhasil mengubah foto group")
+                        if settings['changeProfileVideo']['status'] == True:
+                            path = client.downloadObjectMsg(msg_id, saveAs="tmp/pict.bin")
+                            if settings['changeProfileVideo']['stage'] == 1:
+                                settings['changeProfileVideo']['picture'] = path
+                                client.sendMessage(to, "Silahkan kirimkan video yang ingin anda jadikan profile")
+                                settings['changeProfileVideo']['stage'] = 2
+                            elif settings['changeProfileVideo']['stage'] == 2:
+                                settings['changeProfileVideo']['picture'] = path
+                                changeProfileVideo(to)
+                                client.sendMessage(to, "Berhasil mengubah video profile")
+                    elif msg.contentType == 2:
+                        if settings['changeProfileVideo']['status'] == True:
+                            path = client.downloadObjectMsg(msg_id)
+                            if settings['changeProfileVideo']['stage'] == 1:
+                                settings['changeProfileVideo']['video'] = path
+                                client.sendMessage(to, "Silahkan kirimkan picture yang ingin anda jadikan profile")
+                                settings['changeProfileVideo']['stage'] = 2
+                            elif settings['changeProfileVideo']['stage'] == 2:
+                                settings['changeProfileVideo']['video'] = path
+                                changeProfileVideo(to)
                     elif msg.contentType == 7:
                         if settings["checkSticker"] == True:
                             stk_id = msg.contentMetadata['STKID']
