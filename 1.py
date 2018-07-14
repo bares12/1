@@ -191,8 +191,7 @@ def menuHelp():
 				". " + key + "Creator" + "\n" + \
 				". " + key + "About" + "\n" + \
 				". " + key + "Translate" + "\n" + \
-				". " + key + "TextToSpeech" + "\n" + \
-				". Spam"
+				". TextToSpeech"
 	return menuHelp
 
 def menuHelp1():
@@ -224,7 +223,6 @@ def menuHelp2():
 		key = ''
 	menuHelp2 =	"[ Menu Group ]" + "\n" + \
 				". " + key + "ChangeGroupName: 「Text」" + "\n" + \
-				". " + key + "GroupCreator" + "\n" + \
 				". " + key + "GroupID" + "\n" + \
 				". " + key + "GroupName" + "\n" + \
 				". " + key + "GroupPicture" + "\n" + \
@@ -235,7 +233,6 @@ def menuHelp2():
 				". " + key + "PendingList" + "\n" + \
 				". " + key + "GroupInfo" + "\n" + \
 				". " + key + "Mentionall" + "\n" + \
-				". " + key + "ChangeGroupPicture" + "\n" + \
 				". ChangeGroupPicture"
 	return menuHelp2
 
@@ -1131,10 +1128,6 @@ def clientBot(op):
 										ret_ += "\n╠ {}. {}".format(str(no), str(pending.displayName))
 									ret_ += "\n╚══[ Total {} Pending]".format(str(len(group.invitee)))
 									client.sendMessage(to, str(ret_))
-						elif cmd == "groupcreator":
-							 group = client.getGroup(to)
-                                                         GS = group.creator.mid
-                                                         client.sendContact(to, GS)
 						elif cmd == "groupinfo":
 							group = client.getGroup(to)
 							try:
@@ -1370,12 +1363,12 @@ def clientBot(op):
 									elif search["tipe"] == 2:
 										client.sendVideoWithURL(to, str(search["link"]))
 						elif cmd == "quotes":
-							url = requests.get("https://botfamily.faith/api/quotes/?apikey=beta")
+							url = requests.get("https://talaikis.com/api/quotes/random/")
 							data = url.json()
 							result = "╔══[ Quotes ]"
 							result += "\n╠ Author : {}".format(data["result"]["author"])
 							result += "\n╠ Category : {}".format(data["result"]["category"])
-							result += "\n╠ Quote : {}".format(data["result"]["quote"])
+							result += "\n╠ Kutipan : {}".format(data["result"]["quote"])
 							result += "\n╚══[ Finish ]"
 							client.sendMessage(to, result)
 						elif cmd.startswith("say-"):
@@ -1708,7 +1701,7 @@ def clientBot(op):
 							try:
 								sendTime = unsendTime - unsend[sender]["time"]
 								sendTime = timeChange(sendTime)
-								ret_ = "╔══[ Cinduk Unsend ]"
+								ret_ = "╔══[ Ciduk Unsend ]"
 								ret_ += "\n╠ Orangnya : @!"
 								ret_ += "\n╠ Time : {} yang lalu".format(sendTime)
 								ret_ += "\n╠ Type : Text"
